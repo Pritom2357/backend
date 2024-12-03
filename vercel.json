@@ -6,7 +6,7 @@
         }],
     "functions": {
         "api/applovin.js": {
-            "maxDuration": 60
+            "maxDuration": 30
         }
     },
     "routes": [{
