@@ -4,7 +4,8 @@ import fetch from 'node-fetch';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import crypto from 'crypto'; // For generating the MD5 hash
-
+import { pipeline } from 'stream';
+import { createGzip } from 'zlib';
 
 console.log('AppLovin API Key:', process.env.VITE_APPLOVIN_API_KEY);
 console.log('Mintegral API Key:', process.env.VITE_MINTEGRAL_API_KEY);
@@ -70,9 +71,22 @@ app.get('/', (req, res) => {
 app.get('/api/applovin', async (req, res) => {
     try {
         const apiResponse = await fetch(`https://r.applovin.com/maxReport?api_key=${applovinApiKey}&start=2024-11-10&end=2024-12-31&columns=day,application,impressions,network,package_name,country,attempts,responses,fill_rate,estimated_revenue,ecpm&sort_day=DESC&format=json`);
-        const data = await apiResponse.json();
-        // res.json(data);
-        res.send(data);
+
+        if(!apiResponse.ok){
+            throw new Error(`HTTP error! status: ${apiResponse.status}`);
+        }
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Transfer-Encoding', 'chunked');
+        res.setHeader('Content-Encoding', 'gzip');
+
+        const gzip = createGzip();
+
+        pipeline(apiResponse.body, gzip, res, (err) => {
+            if(err){
+                console.error('Error piping data:', err);
+                res.status(500).json({ error: 'Error piping data' });                
+            }
+        });
     } catch (error) {
         console.error('Error fetching data from API:', error);
         res.status(500).json({ error: 'Error fetching data from API' });

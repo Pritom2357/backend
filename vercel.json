@@ -4,6 +4,11 @@
         "src": "index.js",
         "use": "@vercel/node"
         }],
+    "functions": {
+        "api/applovin.js": {
+            "maxDuration": 60
+        }
+    },
     "routes": [{
         "src": "/(.*)",
         "dest": "/"
