@@ -26,7 +26,7 @@ date7DaysAgo.setDate(currentDate.getDate() - 7);
 
 // Calculate 60 days behind
 const date60DaysAgo = new Date(currentDate);
-date60DaysAgo.setDate(currentDate.getDate() - 60);
+date60DaysAgo.setDate(currentDate.getDate() - 59);
 
 const currentFormatted = getFormattedDate(currentDate);
 const date7DaysAgoFormatted = getFormattedDate(date7DaysAgo);
@@ -49,7 +49,7 @@ if(!applovinApiKey || !mintegralApiKey){
 }
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 const allowOrigins = ['http://localhost:5173', 'https://data2-git-main-pritom-biswas-projects.vercel.app', 'https://data2-pritom-biswas-projects.vercel.app/', 'https://projects-b5xj.vercel.app'];
 
@@ -67,7 +67,8 @@ app.get('/api/applovin', async (req, res) => {
     try {
         const apiResponse = await fetch(`https://r.applovin.com/maxReport?api_key=${applovinApiKey}&start=2024-11-10&end=2024-12-31&columns=day,application,impressions,network,package_name,country,attempts,responses,fill_rate,estimated_revenue,ecpm&sort_day=DESC&format=json`);
         const data = await apiResponse.json();
-        res.json(data);
+        // res.json(data);
+        res.send(data);
     } catch (error) {
         console.error('Error fetching data from API:', error);
         res.status(500).json({ error: 'Error fetching data from API' });
@@ -105,7 +106,8 @@ app.get('/api/mintegral', async (req, res) => {
         console.log('API Response Body:', body); // Log the body
         
         const data = JSON.parse(body);  // Parse it manually after logging
-        res.json(data);
+        // res.json(data);
+        res.send(data);
     } catch (error) {
         console.error('Error fetching data from Mintegral API:', error);
         res.status(500).json({ error: 'Error fetching data from Mintegral API' });
