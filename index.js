@@ -75,18 +75,18 @@ app.get('/api/applovin', async (req, res) => {
         if(!apiResponse.ok){
             throw new Error(`HTTP error! status: ${apiResponse.status}`);
         }
-        res.setHeader('Content-Type', 'application/json');
-        res.setHeader('Transfer-Encoding', 'chunked');
-        res.setHeader('Content-Encoding', 'gzip');
+        res.writeHead(200, {
+            'Content-Type': 'application/json',});
+        apiResponse.body.pipe(res);
 
         const gzip = createGzip();
-
-        pipeline(apiResponse.body, gzip, res, (err) => {
-            if(err){
-                console.error('Error piping data:', err);
-                res.status(500).json({ error: 'Error piping data' });                
-            }
-        });
+        // apiResponse.body.pipe(gzip).pipe(res);
+        // pipeline(apiResponse.body, gzip, res, (err) => {
+        //     if(err){
+        //         console.error('Error piping data:', err);
+        //         res.status(500).json({ error: 'Error piping data' });                
+        //     }
+        // });
     } catch (error) {
         console.error('Error fetching data from API:', error);
         res.status(500).json({ error: 'Error fetching data from API' });
