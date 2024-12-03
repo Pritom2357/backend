@@ -69,9 +69,10 @@ app.get('/', (req, res) => {
     res.send('Hello from the backend!');
 })
 
+
 app.get('/api/applovin', async (req, res) => {
     try {
-        const apiResponse = await fetch(`https://r.applovin.com/maxReport?api_key=${applovinApiKey}&start=2024-11-30&end=2024-12-31&columns=day,application,impressions,network,package_name,country,attempts,responses,fill_rate,estimated_revenue,ecpm&sort_day=DESC&format=json`);
+        const apiResponse = await fetch(`https://r.applovin.com/maxReport?api_key=${applovinApiKey}&start=2024-11-22&end=2024-12-31&columns=day,application,impressions,network,package_name,country,attempts,responses,fill_rate,estimated_revenue,ecpm&sort_day=DESC&format=json`);
 
         if(!apiResponse.ok){
             throw new Error(`HTTP error! status: ${apiResponse.status}`);
