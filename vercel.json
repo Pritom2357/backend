@@ -1,16 +1,14 @@
 {
     "version": 2,
-    "builds": [{
-        "src": "index.js",
-        "use": "@vercel/node"
-        }],
     "functions": {
         "api/applovin.js": {
             "maxDuration": 30
         }
     },
-    "routes": [{
-        "src": "/(.*)",
-        "dest": "/"
-    }]
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "/"
+        }
+    ]
 }
