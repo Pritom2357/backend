@@ -55,14 +55,15 @@ const PORT = process.env.PORT || 5000;
 const allowOrigins = ['http://localhost:5173', 'https://data2-git-main-pritom-biswas-projects.vercel.app', 'https://data2-pritom-biswas-projects.vercel.app/', 'https://projects-b5xj.vercel.app', 'https://projects-chi-one.vercel.app', 'https://backend-five-kohl-26.vercel.app'];
 
 app.use(cors({
-    origin: (origin, callback)=>{
-        if(!origin || allowOrigins.includes(origin)){
-            callback(null, true);
-        }else{
-            callback(new Error('Not allowed by CORS'));
-        }
+    origin: (origin, callback) => {
+      if (!origin || allowOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
     }
-}));
+  }));
+  
 
 app.get('/', (req, res) => {
     res.send('Hello from the backend!');
