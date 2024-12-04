@@ -80,7 +80,7 @@ app.get('/api/applovin', async (req, res) => {
             'Content-Type': 'application/json',});
         apiResponse.body.pipe(res);
 
-        const gzip = createGzip();
+        // const gzip = createGzip();
         // apiResponse.body.pipe(gzip).pipe(res);
         // pipeline(apiResponse.body, gzip, res, (err) => {
         //     if(err){
