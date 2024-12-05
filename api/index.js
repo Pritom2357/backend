@@ -3,9 +3,10 @@ import express from 'express';
 import fetch from 'node-fetch';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import crypto from 'crypto'; // For generating the MD5 hash
+import crypto from 'crypto'; 
 import { pipeline } from 'stream';
 import { createGzip } from 'zlib';
+import { timeStamp } from 'console';
 
 console.log('AppLovin API Key:', process.env.VITE_APPLOVIN_API_KEY);
 console.log('Mintegral API Key:', process.env.VITE_MINTEGRAL_API_KEY);
@@ -21,11 +22,9 @@ function getFormattedDate(date) {
 const currentDate = new Date();
 // currentDate.setDate(currentDate.getDate());
 
-// Calculate 7 days behind
 const date7DaysAgo = new Date(currentDate);
 date7DaysAgo.setDate(currentDate.getDate() - 7);
 
-// Calculate 60 days behind
 const date60DaysAgo = new Date(currentDate);
 date60DaysAgo.setDate(currentDate.getDate() - 59);
 
@@ -39,9 +38,13 @@ console.log('60 Days Ago:', date60DaysAgoFormatted);
 
 const applovinApiKey = process.env.VITE_APPLOVIN_API_KEY;
 const mintegralApiKey = process.env.VITE_MINTEGRAL_API_KEY;
+const mintegralSecret = process.env.VITE_MINTEGRAL_SECRET;
+const mintegralAccessKey = process.env.VITE_MINTEGRAL_ACCESS_KEY;
+const mintegralSpendApiKey = process.env.VITE_MINTEGRAL_SPEND_API_KEY;
 
 console.log("Applovin: ", applovinApiKey);
 console.log("Mintegral: ", mintegralApiKey);
+console.log("Mintegral Access Key: ", mintegralAccessKey);
 
 
 if(!applovinApiKey || !mintegralApiKey){
@@ -96,35 +99,46 @@ app.get('/api/applovin', async (req, res) => {
 
 //mintegral
 
+const generateToken = (accessKey, timestamp) => {
+    const timeHash = crypto.createHash('md5').update(timestamp.toString()).digest('hex');
+    const token = crypto.createHash('md5').update(accessKey + timeHash).digest('hex');
+    return token;
+};
+
 
 app.get('/api/mintegral', async (req, res) => {
     try {
-        // Get the current timestamp (in seconds)
         const currentTimestamp = Math.floor(Date.now() / 1000);
         
-        // Your secret key
         const secret = process.env.VITE_MINTEGRAL_SECRET;
 
-        // Generate the signature (md5(SECRET + md5(time)))
         const timeHash = crypto.createHash('md5').update(currentTimestamp.toString()).digest('hex');
         const signature = crypto.createHash('md5').update(secret + timeHash).digest('hex');
+        const acceessKey = mintegralSpendApiKey //spend API key
+        const token = generateToken(acceessKey, currentTimestamp);
         
-        // Prepare the API URL with the updated timestamp and signature
         console.log(`${currentFormatted}, ${date60DaysAgoFormatted}`);
         
-        const apiUrl = `https://api.mintegral.com/reporting/data?skey=60429916b7c7f4729ee61a4e89591537&time=${currentTimestamp}&start=${date60DaysAgoFormatted}&end=${currentFormatted}&sign=${signature}`;
+        // const apiUrl = `https://api.mintegral.com/reporting/data?skey=60429916b7c7f4729ee61a4e89591537&time=${currentTimestamp}&start=${date60DaysAgoFormatted}&end=${currentFormatted}&sign=${signature}`;
+
+        const apiUrl2 = `https://ss-api.mintegral.com/api/v1/reports/data?start_date=${date7DaysAgoFormatted}&end_date=${currentFormatted}&utc=+6`;
+
+        const headers = {
+            'access-key': mintegralAccessKey,
+            'token': token,
+            'timestamp': currentTimestamp.toString(),
+          };
         
-        // Fetch the data from Mintegral API
-        const apiResponse = await fetch(apiUrl);
+        const apiResponse = await fetch(apiUrl2, {method: 'GET', headers});
 
         if (!apiResponse.ok) {
             throw new Error(`Error: Received status code ${apiResponse.status}`);
         }
 
-        const body = await apiResponse.text();  // Read the body as text
-        console.log('API Response Body:', body); // Log the body
+        const body = await apiResponse.text(); 
+        console.log('API Response Body:', body); 
         
-        const data = JSON.parse(body);  // Parse it manually after logging
+        const data = JSON.parse(body); 
         // res.json(data);
         res.send(data);
     } catch (error) {
