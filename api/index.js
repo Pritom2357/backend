@@ -12,6 +12,10 @@ console.log('AppLovin API Key:', process.env.VITE_APPLOVIN_API_KEY);
 console.log('Mintegral API Key:', process.env.VITE_MINTEGRAL_API_KEY);
 console.log('Mintegral Secret:', process.env.VITE_MINTEGRAL_SECRET);
 
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config();
+}
+
 function getFormattedDate(date) {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
