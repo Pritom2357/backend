@@ -114,8 +114,8 @@ app.get('/api/mintegral', async (req, res) => {
 
         const timeHash = crypto.createHash('md5').update(currentTimestamp.toString()).digest('hex');
         const signature = crypto.createHash('md5').update(secret + timeHash).digest('hex');
-        const acceessKey = mintegralSpendApiKey //spend API key
-        const token = generateToken(acceessKey, currentTimestamp);
+        const spendAPIKey = mintegralSpendApiKey //spend API key
+        const token = generateToken(spendAPIKey, currentTimestamp);
         
         console.log(`${currentFormatted}, ${date60DaysAgoFormatted}`);
         
