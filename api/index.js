@@ -4,9 +4,10 @@ import fetch from 'node-fetch';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import crypto from 'crypto'; 
+import axios from 'axios';
 import { pipeline } from 'stream';
 import { createGzip } from 'zlib';
-import { timeStamp } from 'console';
+import { log, timeStamp } from 'console';
 
 console.log('AppLovin API Key:', process.env.VITE_APPLOVIN_API_KEY);
 console.log('Mintegral API Key:', process.env.VITE_MINTEGRAL_API_KEY);
@@ -76,6 +77,47 @@ app.get('/', (req, res) => {
     res.send('Hello from the backend!');
 })
 
+// index.js
+
+// Token generation function
+const generateToken = (apiKey, timestamp) => {
+    const timeHash = crypto.createHash('md5').update(timestamp.toString()).digest('hex');
+    return crypto.createHash('md5').update(apiKey + timeHash).digest('hex');
+  };
+  
+  app.get('/api/mintegral/spend', async (req, res) => {
+    try {
+      const timestamp = Math.floor(Date.now() / 1000);
+      const spendToken = generateToken(mintegralSpendApiKey, timestamp);
+
+      const today = new Date();
+      const sevenDaysAgo = new Date(today);
+      sevenDaysAgo.setDate(today.getDate() - 7);
+
+      const startDate = sevenDaysAgo.toISOString().split('T')[0].replace(/-/g, '');
+      const endDate = today.toISOString().split('T')[0].replace(/-/g, '');
+
+      await axios.get(`https://ss-api.mintegral.com/api/v1/reports/data`, {
+        headers:{
+          'access-key': mintegralAccessKey,
+          'token': spendToken,
+          'timestamp': timestamp.toString(),
+        },
+        params: {
+          start_date: sevenDaysAgo,
+          end_date: today,
+          dimension: 'location',
+        }
+      })
+      .then((response)=>{
+          console.log(response.data);
+          res.json(response.data);
+      })
+    } catch (error) {
+        console.log(error);
+    }
+  });
+
 app.get('/api/applovin', async (req, res) => {
     try {
         const apiResponse = await fetch(`https://r.applovin.com/maxReport?api_key=${applovinApiKey}&start=2024-11-10&end=2024-12-31&columns=day,estimated_revenue,country,network,application&sort_day=DESC&format=json`);
@@ -103,13 +145,6 @@ app.get('/api/applovin', async (req, res) => {
 
 //mintegral
 
-const generateToken = (accessKey, timestamp) => {
-    const timeHash = crypto.createHash('md5').update(timestamp.toString()).digest('hex');
-    const token = crypto.createHash('md5').update(accessKey + timeHash).digest('hex');
-    return token;
-};
-
-
 app.get('/api/mintegral', async (req, res) => {
     try {
         const currentTimestamp = Math.floor(Date.now() / 1000);
@@ -125,7 +160,8 @@ app.get('/api/mintegral', async (req, res) => {
         
         // const apiUrl = `https://api.mintegral.com/reporting/data?skey=60429916b7c7f4729ee61a4e89591537&time=${currentTimestamp}&start=${date60DaysAgoFormatted}&end=${currentFormatted}&sign=${signature}`;
 
-        const apiUrl2 = `https://ss-api.mintegral.com/api/v1/reports/data?start_date=${date7DaysAgoFormatted}&end_date=${currentFormatted}&utc=+6`;
+        const apiUrl2 = `https://ss-api.mintegral.com/api/v1/reports/data?start_date=${date7DaysAgoFormatted}&end_date=${currentFormatted}&utc=+6&dimension_type=Location`;
+
 
         const headers = {
             'access-key': mintegralAccessKey,
