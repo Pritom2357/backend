@@ -120,7 +120,7 @@ const generateToken = (apiKey, timestamp) => {
 
 app.get('/api/applovin', async (req, res) => {
     try {
-        const apiResponse = await fetch(`https://r.applovin.com/maxReport?api_key=${applovinApiKey}&start=2024-11-10&end=2024-12-31&columns=day,estimated_revenue,country,network,application&sort_day=DESC&format=json`);
+        const apiResponse = await fetch(`https://r.applovin.com/maxReport?api_key=${applovinApiKey}&start=2024-11-10&end=2024-12-31&columns=day,estimated_revenue,package_name&sort_day=DESC&format=json`);
 
         if(!apiResponse.ok){
             throw new Error(`HTTP error! status: ${apiResponse.status}`);
