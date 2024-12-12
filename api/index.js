@@ -107,6 +107,7 @@ const generateToken = (apiKey, timestamp) => {
           start_date: sevenDaysAgo,
           end_date: today,
           dimension: 'location',
+          utc: "+0",
         }
       })
       .then((response)=>{
