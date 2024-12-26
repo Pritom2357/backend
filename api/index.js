@@ -17,6 +17,20 @@ if (process.env.NODE_ENV !== 'production') {
     dotenv.config();
 }
 
+function formatDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+const today = new Date();
+const endDate = formatDate(today);
+
+const fortyDaysAgo = new Date();
+fortyDaysAgo.setDate(fortyDaysAgo.getDate() - 40);
+const startDate = formatDate(fortyDaysAgo);
+
 function getFormattedDate(date) {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -128,7 +142,7 @@ const generateToken = (apiKey, timestamp) => {
 
 app.get('/api/applovin', async (req, res) => {
     try {
-        const apiResponse = await fetch(`https://r.applovin.com/maxReport?api_key=${applovinApiKey}&start=2024-11-10&end=2024-12-31&columns=day,estimated_revenue,package_name,country&sort_day=DESC&format=json`);
+        const apiResponse = await fetch(`https://r.applovin.com/maxReport?api_key=${applovinApiKey}&start=${startDate}&end=${endDate}&columns=day,estimated_revenue,package_name,country&sort_day=DESC&format=json`);
 
         if(!apiResponse.ok){
             throw new Error(`HTTP error! status: ${apiResponse.status}`);
