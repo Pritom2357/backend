@@ -62,10 +62,10 @@ const PORT = process.env.PORT || 5000;
 
 const allowOrigins = [
   'http://localhost:5173',
-  // 'https://data2-git-main-pritom-biswas-projects.vercel.app',
-  // 'https://data2-pritom-biswas-projects.vercel.app',
-  // 'https://projects-b5xj.vercel.app',
-  // 'https://data2-rho.vercel.app', 
+  'https://data2-git-main-pritom-biswas-projects.vercel.app',
+  'https://data2-pritom-biswas-projects.vercel.app',
+  'https://projects-b5xj.vercel.app',
+  'https://data2-rho.vercel.app', 
   'https://projects-chi-one.vercel.app'
 ];
 
