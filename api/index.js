@@ -66,6 +66,7 @@ const allowOrigins = [
   'https://data2-pritom-biswas-projects.vercel.app',
   'https://projects-b5xj.vercel.app',
   'https://data2-rho.vercel.app', 
+  'https://projects-chi-one.vercel.app/'
 ];
 
 app.use(cors({
